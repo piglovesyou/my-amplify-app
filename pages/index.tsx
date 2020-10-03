@@ -1,17 +1,19 @@
-import Link from 'next/link'
-import { useViewerQuery, ViewerDocument } from '../lib/viewer.graphql'
+// import Link from 'next/link'
+import { useGetPostQuery, GetPostDocument } from '../lib/getPost.graphql';
 import { initializeApollo } from '../lib/apollo'
 
 const Index = () => {
-  const { viewer } = useViewerQuery().data!
+  const {data, loading} = useGetPostQuery({
+    variables: {
+      id: 'post-1'
+    }
+  });
+  if (loading) return <div>loading</div>;
+  const { getPost } = data!
 
   return (
     <div>
-      You're signed in as {viewer.name} and you're {viewer.status} go to the{' '}
-      <Link href="/about">
-        <a>about</a>
-      </Link>{' '}
-      page.
+      {getPost?.title} from {getPost?.blog?.name}
     </div>
   )
 }
@@ -20,7 +22,10 @@ export async function getStaticProps() {
   const apolloClient = initializeApollo()
 
   await apolloClient.query({
-    query: ViewerDocument,
+    query: GetPostDocument,
+    variables: {
+      id: 'post-1'
+    }
   })
 
   return {

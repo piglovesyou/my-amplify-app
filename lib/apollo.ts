@@ -4,6 +4,7 @@ import {
   ApolloClient,
   InMemoryCache,
   NormalizedCacheObject,
+    HttpLink,
 } from '@apollo/client'
 
 let apolloClient: ApolloClient<NormalizedCacheObject> | undefined
@@ -13,24 +14,16 @@ export type ResolverContext = {
   res?: ServerResponse
 }
 
-function createIsomorphLink(context: ResolverContext = {}) {
-  if (typeof window === 'undefined') {
-    const { SchemaLink } = require('@apollo/client/link/schema')
-    const { schema } = require('./schema')
-    return new SchemaLink({ schema, context })
-  } else {
-    const { HttpLink } = require('@apollo/client')
-    return new HttpLink({
-      uri: '/api/graphql',
-      credentials: 'same-origin',
-    })
-  }
-}
-
-function createApolloClient(context?: ResolverContext) {
+function createApolloClient(_context?: ResolverContext) {
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
-    link: createIsomorphLink(context),
+    // link: createIsomorphLink(context),
+    link: new HttpLink({
+      uri: process.env.aws_appsync_graphqlEndpoint,
+      headers: {
+        'x-api-key': process.env.aws_appsync_apiKey,
+      }
+    }),
     cache: new InMemoryCache(),
   })
 }

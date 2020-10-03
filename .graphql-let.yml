@@ -1,6 +1,11 @@
-schema: '**/*.graphqls'
-schemaEntrypoint: 'lib/type-defs.graphqls'
-documents: '**/*.graphql'
+schema: src/graphql/schema.json
+#schema:
+#  - https://mwzdcyyjuvbinnfxg5flgrmzay.appsync-api.ap-northeast-1.amazonaws.com/graphql:
+#      headers:
+#        x-api-key: da2-dd52xtx3ebau5d62dyoi6rwr4i
+documents:
+  - '**/*.graphql'
+  - '!amplify'
 plugins:
   - typescript
   - typescript-operations
